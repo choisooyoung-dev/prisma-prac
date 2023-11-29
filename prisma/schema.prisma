@@ -25,7 +25,7 @@ model Users {
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @default(now()) @map("updatedAt")
 
-  Userinfos UserInfos?  // 1:1
+  UserInfos UserInfos?  // 1:1
   Posts Posts[] // 1:N
   Comments  Comments[] // 1:N
 
@@ -59,6 +59,8 @@ model UserInfos {
 }
 
 
+
+
 // Posts
 // postId (PK)	INTEGER	NOT NULL	AUTO_INCREMENT
 // title	STRING	NOT NULL	
@@ -89,8 +91,8 @@ model Posts {
 
 model Comments {
    commentId Int @id @default(autoincrement()) @map("commentId")
-   PostId    Int      @map("PostId")
-   UserId    Int      @map("UserId")
+   PostId    Int @map("PostId")
+   UserId    Int @map("UserId")
    content String @db.Text @map("content")
 
    createdAt DateTime @default(now()) @map("createdAt")
