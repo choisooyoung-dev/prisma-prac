@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//Users
+// userId (PK)	INTEGER	NOT NULL	AUTO_INCREMENT
+// email	STRING	NOT NULL	
+// password	STRING	NOT NULL	
+// createdAt	DATETIME	NOT NULL	현재 시간
+// updatedAt	DATETIME	NOT NULL	현재 시간
+
+model Users {
+  userId Int @id @default(autoincrement()) @map("userId")
+  email String @unique @map("email")
+  password String @map("password")
+
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @default(now()) @map("updatedAt")
+
+  UserInfos UserInfos?  // 1:1
+  Posts Posts[] // 1:N
+  Comments  Comments[] // 1:N
+
+  @@map("Users")
+
+}
+
+//  UserInfos
+// userInfoId (PK)	INTEGER	NOT NULL	AUTO_INCREMENT
+// name	STRING	NOT NULL	
+// age	INTEGER	NULL	
+// gender	STRING	NOT NULL	
+// profileImage	STRING	NULL	
+// createdAt	DATETIME	NOT NULL	현재 시간
+// updatedAt	DATETIME	NOT NULL	현재 시간
+
+model UserInfos {
+  userInfoId Int @id @default(autoincrement()) @map("userInfoId")
+  UserId Int @unique @map("UserId")
+  name String @map("name")
+  age Int? @map("age")
+  gender String @map("gender")
+  profileImage String? @map("profileImage")
+
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @default(now()) @map("updatedAt")
+
+  User Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+
+  @@map("UserInfos")
+}
+
+
+
+
+// Posts
+// postId (PK)	INTEGER	NOT NULL	AUTO_INCREMENT
+// title	STRING	NOT NULL	
+// content	TEXT	NOT NULL	
+// createdAt	DATETIME	NOT NULL	현재 시간
+// updatedAt	DATETIME	NOT NULL	현재 시간
+
+model Posts {
+  postId Int @id @default(autoincrement()) @map("postId")
+  UserId Int @map("UserId")
+  title String @map("title")
+  content String @db.Text @map("content")
+
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @default(now()) @map("updatedAt")
+
+  User Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+  Comments Comments[] // 1:N
+
+  @@map("Posts")
+}
+
+// Comments
+// commentId (PK)	INTEGER	NOT NULL	AUTO_INCREMENT
+// content	STRING	NOT NULL	
+// createdAt	DATETIME	NOT NULL	현재 시간
+// updatedAt	DATETIME	NOT NULL	현재 시간
+
+model Comments {
+   commentId Int @id @default(autoincrement()) @map("commentId")
+   PostId    Int @map("PostId")
+   UserId    Int @map("UserId")
+   content String @db.Text @map("content")
+
+   createdAt DateTime @default(now()) @map("createdAt")
+   updatedAt DateTime @default(now()) @map("updatedAt")
+
+   User Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+   Post Posts @relation(fields: [PostId], references: [postId], onDelete: Cascade)
+
+   @@map("Comments")
+}
